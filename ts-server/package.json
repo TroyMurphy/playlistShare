@@ -1,11 +1,12 @@
 {
-  "name": "marbles-cards",
+  "name": "playlist-share",
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
   "scripts": {
     "build": "npx tsc",
-    "start": "tsnd server.ts"
+    "start": "tsnd server.ts",
+		"dev": "tsnd --transpile-only --respawn --project server.ts"
   },
   "keywords": [],
   "author": "",
