@@ -17,7 +17,7 @@ export const roomStateSingleton = new RoomStateStore();
 
 export const RoomStateStoreContext = createContext(roomStateSingleton);
 
-export const useRoomState = (): RoomStateStore =>
+export const useRoomStore = (): RoomStateStore =>
 	useContext(RoomStateStoreContext);
 
 export const SocketConsumer = ({

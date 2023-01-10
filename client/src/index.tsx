@@ -4,16 +4,22 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "./Contexts/SocketProvider";
+import { BrowserRouter } from "react-router-dom";
+import { ColorModeScript } from "@chakra-ui/react";
+import theme from "./Theme";
 
 const root = ReactDOM.createRoot(
 	document.getElementById("root") as HTMLElement
 );
 root.render(
-	<Provider>
-		<React.StrictMode>
-			<App />
-		</React.StrictMode>
-	</Provider>
+	<BrowserRouter>
+		<Provider>
+			<React.StrictMode>
+				<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+				<App />
+			</React.StrictMode>
+		</Provider>
+	</BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

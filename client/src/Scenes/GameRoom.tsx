@@ -1,73 +1,89 @@
-import { Box, Button } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSocket } from "../Contexts/SocketProvider";
-import YoutubeSearch from "./YoutubeSearch";
 import "./GameRoom.css";
-import { useRoomState } from "../Contexts/RoomState";
+import { useRoomStore } from "../Contexts/RoomState";
+import { observer } from "mobx-react-lite";
+import { useParams } from "react-router-dom";
+import {
+	Box,
+	Container,
+	Text,
+	Table,
+	Th,
+	Tbody,
+	Thead,
+	Tr,
+	Td,
+} from "@chakra-ui/react";
+import SongRequest from "../Models/songRequest";
 
-interface IGameRoomProps {
-	roomCode: string;
-}
+function GameRoom() {
+	const { socket, joinRoom } = useSocket();
 
-function GameRoom({ roomCode }: IGameRoomProps) {
-	const { socket, joinRoom, requestVideo } = useSocket();
-	const [lobby, setLobby] = useState<string[]>([]);
-	const { room } = useRoomState();
+	const { room } = useRoomStore();
+	const { roomCode } = useParams();
 
 	useEffect(() => {
 		(async function () {
-			// TODO: Extract to constants
-			await socket.on("members-change", (lobbyists) => {
-				console.log("members changed");
-				setLobby(lobbyists);
-			});
+			// // TODO: Extract to constants
+			// await socket.on("members-change", (lobbyists) => {
+			// 	console.log("members changed");
+			// 	setLobby(lobbyists);
+			// });
 
-			await socket.on("playlist-init", (videoUrls: Array<string>) => {
-				console.log("playlist-init");
-				room.setPlaylist(videoUrls);
-			});
+			// await socket.on("playlist-init", (videoUrls: Array<string>) => {
+			// 	console.log("playlist-init");
+			// 	room.setPlaylist(videoUrls);
+			// });
 
 			await socket.on("request-added", (videoUrl: string) => {
 				room.addVideo(videoUrl);
 			});
 
-			joinRoom(roomCode);
+			joinRoom(roomCode as string);
 		})();
-	}, [socket, roomCode, joinRoom]);
-
-	const onRequest = (video: string) => {
-		requestVideo(video);
-	};
+	}, [socket, roomCode, joinRoom, room]);
 
 	return (
 		<>
 			<Box>
+				<p>{socket.id}</p>
 				<h1>Game Room [{roomCode}]</h1>
 			</Box>
 			<Box>
 				<h2>Room [{JSON.stringify(room)}]</h2>
 			</Box>
-			<Grid container spacing={2}>
-				<Grid item xs={6}>
+			{/* <Grid gap={2}>
+				<GridItem w={10}>
 					{room.playlist.map((url: string, i: number) => (
 						<p key={"song" + i}>{url}</p>
 					))}
-				</Grid>
-				<Grid item xs={3}>
-					<YoutubeSearch onRequest={onRequest} />
-				</Grid>
-
-				<Grid item xs={3}>
-					<div>
-						{lobby.map((x, i) => (
-							<p key={"code" + i}>{x}</p>
-						))}
-					</div>
-				</Grid>
-			</Grid>
+				</GridItem>
+			</Grid> */}
+			<Container>
+				{room.playlist.length > 0 ? (
+					<Table>
+						<Thead>
+							<Th>Song</Th>
+							<Th>Singer</Th>
+						</Thead>
+						<Tbody>
+							{room.playlist.map((req: SongRequest) => (
+								<Tr key={crypto.randomUUID()}>
+									<Td>{req.songTitle}</Td>
+									<Td>{req.singer}</Td>
+								</Tr>
+							))}
+						</Tbody>
+					</Table>
+				) : (
+					<Box>
+						<Text>Nothing here yet! SongRequest a song!</Text>
+					</Box>
+				)}
+			</Container>
 		</>
 	);
 }
 
-export default GameRoom;
+export default observer(GameRoom);

@@ -1,15 +1,18 @@
+import { makeAutoObservable } from "mobx";
+import SongRequest from "./songRequest";
+
 export default class Room {
-	playlist: Array<string>;
+	playlist: Array<SongRequest> = new Array<SongRequest>();
 
 	constructor() {
-		this.playlist = new Array<string>();
+		makeAutoObservable(this);
 	}
 
 	setPlaylist(videos: string[]) {
-		this.playlist = videos;
+		this.playlist = videos.map((x) => new SongRequest({ video: x }));
 	}
 
 	addVideo(videoUrl: string) {
-		this.playlist.push(videoUrl);
+		this.playlist.push(new SongRequest({ video: videoUrl }));
 	}
 }

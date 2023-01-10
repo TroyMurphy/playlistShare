@@ -1,14 +1,12 @@
 import {
-	Autocomplete,
-	Box,
 	Card,
-	CardContent,
-	CardMedia,
+	CardBody,
+	CardFooter,
 	Grid,
-	TextField,
-	TextFieldProps,
-	Typography,
-} from "@mui/material";
+	GridItem,
+	Image,
+	Text,
+} from "@chakra-ui/react";
 import { useState } from "react";
 
 interface IYoutubeSearchProps {
@@ -16,46 +14,23 @@ interface IYoutubeSearchProps {
 }
 
 function YoutubeSearch(props: IYoutubeSearchProps) {
-	const [searchResults, setSearchResults] = useState<string[]>([
-		"apple",
-		"Banana",
-		"sillygoose",
-	]);
+	const [searchResults] = useState<string[]>(["apple", "Banana", "sillygoose"]);
 
 	return (
 		<>
-			<Box>
-				<Autocomplete
-					disablePortal
-					id="combo-box-demo"
-					options={searchResults}
-					renderInput={(params: TextFieldProps) => (
-						<TextField {...params} label="New Request" />
-					)}
-				/>
-			</Box>
-			<Grid container spacing={2}>
-				<Grid>
+			<Grid gap={2}>
+				<GridItem>
 					{searchResults.map((result: string, index: number) => (
-						<Card
-							sx={{ maxWidth: 200 }}
-							key={index}
-							onClick={() => props.onRequest(result)}
-						>
-							<CardMedia
-								component="img"
-								height="200"
-								image="https://unsplash.it/200"
-								alt="Paella dish"
-							/>
-							<CardContent>
-								<Typography variant="body2" color="text.secondary">
-									{result}
-								</Typography>
-							</CardContent>
+						<Card key={index} onClick={() => props.onRequest(result)}>
+							<CardBody>
+								<Image src="https://unsplash.it/200" />
+							</CardBody>
+							<CardFooter>
+								<Text>{result}</Text>
+							</CardFooter>
 						</Card>
 					))}
-				</Grid>
+				</GridItem>
 			</Grid>
 		</>
 	);

@@ -3,6 +3,7 @@ import http from "http";
 import Room from "./room";
 import sockets from "socket.io";
 import IVideoRequest from "./IVideoRequest";
+import { Console } from "console";
 
 const port = 5000;
 
@@ -40,39 +41,48 @@ io.on("connection", (socket: sockets.Socket) => {
 
 	socket.on("request-video", async (req: string) => {
 		const request: IVideoRequest = JSON.parse(req);
+		if (GetRoom(request.room) === undefined) {
+			console.error("Room does not exist: " + request.room);
+			return;
+		}
 		console.dir(request);
-		console.log(Object.keys(lobbies).join(","));
 		// TODO: push video to array
 		GetRoom(request.room).AddVideo(request.video);
 
-		await io.in(request.room).emit("request-added", request.video);
+		console.log("TO HOST: " + GetRoom(request.room).host);
+
+		await io
+			.to(GetRoom(request.room).host)
+			.emit("request-added", request.video);
 	});
 
 	socket.on("join-room", async (roomCode: string) => {
-		console.log("new member joining room " + roomCode);
+		console.log("new member joining room " + roomCode + ": " + socket.id);
 		await socket.join(roomCode);
 		if (lobbies[roomCode] !== undefined) {
-			console.log("if");
 			GetRoom(roomCode).members.add(socket.id);
 		} else {
-			console.log("else");
-			lobbies[roomCode] = new Room();
+			lobbies[roomCode] = new Room(socket.id);
 			lobbies[roomCode].members = new Set([socket.id]);
 		}
-		await io
-			.in(roomCode)
-			.emit("members-change", Array.from(GetRoom(roomCode).members));
 
 		await io
-			.to(socket.id)
-			.emit("playlist-init", Array.from(GetRoom(roomCode).videos));
+			.to(GetRoom(roomCode).host)
+			.emit("members-changed", GetRoom(roomCode).members.size.toString());
+
+		// await io
+		// 	.in(roomCode)
+		// 	.emit("members-change", Array.from(GetRoom(roomCode).members));
 	});
 
 	socket.on("disconnect", () => {
 		console.log("user disconnected");
 		Object.keys(lobbies).forEach((x) => {
 			lobbies[x].members.delete(socket.id);
-			io.to(x).emit("members-change", Array.from(lobbies[x].members));
+			io.to(lobbies[x].host).emit("members-changed", lobbies[x].members.size);
+			if (lobbies[x].members.size == 0) {
+				delete lobbies[x];
+			}
 		});
 	});
 });

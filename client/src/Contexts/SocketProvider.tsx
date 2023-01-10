@@ -10,7 +10,7 @@ export class SocketStore {
 		this.socket = openSocket("localhost:5000");
 	}
 
-	requestVideo = async (videoUrl: string) => {
+	requestVideo = async (videoUrl: string, name: string) => {
 		if (this.activeRoom === undefined) {
 			throw new Error("Room not set");
 		}
@@ -18,6 +18,7 @@ export class SocketStore {
 			"request-video",
 			JSON.stringify({
 				video: videoUrl,
+				from: name,
 				room: this.activeRoom,
 			})
 		);
