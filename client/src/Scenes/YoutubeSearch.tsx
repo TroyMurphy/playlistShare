@@ -7,6 +7,7 @@ import {
 	Image,
 	Text,
 } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 interface IYoutubeSearchProps {
@@ -35,4 +36,4 @@ function YoutubeSearch(props: IYoutubeSearchProps) {
 		</>
 	);
 }
-export default YoutubeSearch;
+export default observer(YoutubeSearch);

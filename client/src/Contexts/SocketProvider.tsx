@@ -1,3 +1,4 @@
+import { makeObservable, observable } from "mobx";
 import { createContext, ReactElement, useContext } from "react";
 import openSocket, { Socket } from "socket.io-client";
 
@@ -5,10 +6,18 @@ export class SocketStore {
 	socket: Socket;
 
 	activeRoom?: string;
+	activeUsername?: string;
 
 	constructor() {
 		this.socket = openSocket("localhost:5000");
+		makeObservable(this, { activeUsername: observable });
 	}
+
+	setActiveUser = (name: string) => {
+		this.activeUsername = name;
+		var request = { roomCode: this.activeRoom, name: this.activeUsername };
+		this.socket.emit("username-change", JSON.stringify(request));
+	};
 
 	requestVideo = async (videoUrl: string, name: string) => {
 		if (this.activeRoom === undefined) {
@@ -25,9 +34,9 @@ export class SocketStore {
 	};
 
 	joinRoom = async (roomCode: string) => {
-		this.activeRoom = roomCode;
+		var request = { roomCode: this.activeRoom, name: this.activeUsername };
 
-		this.socket.emit("join-room", roomCode);
+		this.socket.emit("join-room", JSON.stringify(request));
 	};
 }
 

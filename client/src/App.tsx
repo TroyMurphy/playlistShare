@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import GuestRoom from "./Scenes/GuestRoom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./Components/Navbar";
+import { observer } from "mobx-react-lite";
 
 function App() {
 	return (
@@ -22,4 +23,4 @@ function App() {
 	);
 }
 
-export default App;
+export default observer(App);

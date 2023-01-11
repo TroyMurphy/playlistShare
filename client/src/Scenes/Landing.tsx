@@ -1,7 +1,8 @@
-import "./Landing.css";
+import { Box, Button, Flex, Input, Spacer, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Flex, Input, Spacer, VStack } from "@chakra-ui/react";
+import { useSocket } from "../Contexts/SocketProvider";
+import "./Landing.css";
 
 interface ILandingProps {
 	// onRoomCode: (x: string) => void;
@@ -9,6 +10,7 @@ interface ILandingProps {
 
 function Landing(props: ILandingProps) {
 	// const { onRoomCode } = props;
+	const { setActiveUser } = useSocket();
 
 	const navigate = useNavigate();
 	const [roomCode, setRoomCode] = useState<string>("");
@@ -16,6 +18,7 @@ function Landing(props: ILandingProps) {
 
 	const joinRoom = () => {
 		if (roomCode !== "") {
+			setActiveUser(name);
 			navigate(`/room/${roomCode}/guest`);
 		}
 	};
@@ -31,7 +34,9 @@ function Landing(props: ILandingProps) {
 					placeholder="ENTER 4-LETTER CODE"
 					id="room"
 					value={roomCode}
-					onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setRoomCode(e.target.value.toUpperCase())
+					}
 				/>
 				<Spacer />
 				<Box w="100%">
@@ -41,12 +46,15 @@ function Landing(props: ILandingProps) {
 					type="text"
 					value={name}
 					placeholder="ENTER NAME"
-					onChange={(e) => setName(e.target.value.toUpperCase())}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setName(e.target.value.toUpperCase())
+					}
 				/>
 				<Spacer />
 				<Button
 					width="80%"
-					disabled={roomCode === undefined || roomCode === ""}
+					p="5"
+					disabled={roomCode.length !== 4 || name.length === 0}
 					onClick={joinRoom}
 				>
 					JOIN

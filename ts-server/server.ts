@@ -3,7 +3,8 @@ import http from "http";
 import Room from "./room";
 import sockets from "socket.io";
 import IVideoRequest from "./IVideoRequest";
-import { Console } from "console";
+import IJoinRequest from "./IJoinRequest";
+import INameChangeRequest from "./INameChangeRequest";
 
 const port = 5000;
 
@@ -56,19 +57,26 @@ io.on("connection", (socket: sockets.Socket) => {
 			.emit("request-added", request.video);
 	});
 
-	socket.on("join-room", async (roomCode: string) => {
+	socket.on("username-change", async (req: string) => {
+		const { roomCode, name }: INameChangeRequest = JSON.parse(req);
+		GetRoom(roomCode).updateMember(socket.id, name);
+		// TODO: Send song requests to host?
+	});
+
+	socket.on("join-room", async (req: string) => {
+		const { roomCode, name }: IJoinRequest = JSON.parse(req);
+
 		console.log("new member joining room " + roomCode + ": " + socket.id);
 		await socket.join(roomCode);
 		if (lobbies[roomCode] !== undefined) {
-			GetRoom(roomCode).members.add(socket.id);
+			GetRoom(roomCode).addMember(socket.id, name);
 		} else {
 			lobbies[roomCode] = new Room(socket.id);
-			lobbies[roomCode].members = new Set([socket.id]);
 		}
 
 		await io
 			.to(GetRoom(roomCode).host)
-			.emit("members-changed", GetRoom(roomCode).members.size.toString());
+			.emit("members-changed", GetRoom(roomCode).memberCount().toString());
 
 		// await io
 		// 	.in(roomCode)
@@ -78,9 +86,9 @@ io.on("connection", (socket: sockets.Socket) => {
 	socket.on("disconnect", () => {
 		console.log("user disconnected");
 		Object.keys(lobbies).forEach((x) => {
-			lobbies[x].members.delete(socket.id);
-			io.to(lobbies[x].host).emit("members-changed", lobbies[x].members.size);
-			if (lobbies[x].members.size == 0) {
+			lobbies[x].disconnect(socket.id);
+			io.to(lobbies[x].host).emit("members-changed", lobbies[x].memberCount());
+			if (lobbies[x].memberCount() == 0) {
 				delete lobbies[x];
 			}
 		});

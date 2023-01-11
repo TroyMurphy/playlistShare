@@ -3,7 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { Provider } from "./Contexts/SocketProvider";
+import { Provider as SocketProvider } from "./Contexts/SocketProvider";
+import { Provider as RoomProvider } from "./Contexts/SocketProvider";
 import { BrowserRouter } from "react-router-dom";
 import { ColorModeScript } from "@chakra-ui/react";
 import theme from "./Theme";
@@ -13,12 +14,14 @@ const root = ReactDOM.createRoot(
 );
 root.render(
 	<BrowserRouter>
-		<Provider>
-			<React.StrictMode>
-				<ColorModeScript initialColorMode={theme.config.initialColorMode} />
-				<App />
-			</React.StrictMode>
-		</Provider>
+		<SocketProvider>
+			<RoomProvider>
+				<React.StrictMode>
+					<ColorModeScript initialColorMode={theme.config.initialColorMode} />
+					<App />
+				</React.StrictMode>
+			</RoomProvider>
+		</SocketProvider>
 	</BrowserRouter>
 );
 

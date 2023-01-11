@@ -1,5 +1,5 @@
 class Room {
-	members: Set<string> = new Set<string>();
+	members: { [id: string]: string } = {};
 
 	host: string;
 
@@ -12,6 +12,23 @@ class Room {
 	 */
 	constructor(socketId: string) {
 		this.host = socketId;
+	}
+
+	memberCount(): number {
+		return Object.keys(this.members).length;
+	}
+
+	addMember(socket: string, name: string) {
+		this.members[socket] = name;
+	}
+
+	disconnect(socketId: string) {
+		delete this.members[socketId];
+	}
+
+	updateMember(socket: string, name: string) {
+		this.members[socket] = name;
+		// TODO: Update song requests?
 	}
 
 	AddVideo(videoUrl: string) {

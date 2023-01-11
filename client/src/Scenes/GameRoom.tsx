@@ -1,21 +1,21 @@
-import { useEffect } from "react";
-import { useSocket } from "../Contexts/SocketProvider";
-import "./GameRoom.css";
-import { useRoomStore } from "../Contexts/RoomState";
-import { observer } from "mobx-react-lite";
-import { useParams } from "react-router-dom";
 import {
 	Box,
 	Container,
-	Text,
 	Table,
-	Th,
 	Tbody,
+	Td,
+	Text,
+	Th,
 	Thead,
 	Tr,
-	Td,
 } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useRoomStore } from "../Contexts/RoomState";
+import { useSocket } from "../Contexts/SocketProvider";
 import SongRequest from "../Models/songRequest";
+import "./GameRoom.css";
 
 function GameRoom() {
 	const { socket, joinRoom } = useSocket();
@@ -78,7 +78,7 @@ function GameRoom() {
 					</Table>
 				) : (
 					<Box>
-						<Text>Nothing here yet! SongRequest a song!</Text>
+						<Text>Nothing here yet!</Text>
 					</Box>
 				)}
 			</Container>

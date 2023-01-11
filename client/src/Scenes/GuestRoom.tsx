@@ -1,11 +1,12 @@
 import { Flex } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSocket } from "../Contexts/SocketProvider";
 import YoutubeSearch from "./YoutubeSearch";
 
 function GuestRoom() {
-	const { socket, joinRoom, requestVideo } = useSocket();
+	const { socket, activeUsername, joinRoom, requestVideo } = useSocket();
 	const { roomCode } = useParams();
 
 	const onRequest = (video: string) => {
@@ -21,6 +22,7 @@ function GuestRoom() {
 	return (
 		<>
 			<h3>{socket.id}</h3>
+			<h2>Signed in as: {activeUsername}</h2>
 			<h1>Have fun! Request Songs</h1>
 			<Flex>
 				<YoutubeSearch onRequest={onRequest} />
@@ -29,4 +31,4 @@ function GuestRoom() {
 	);
 }
 
-export default GuestRoom;
+export default observer(GuestRoom);
