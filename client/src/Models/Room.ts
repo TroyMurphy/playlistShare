@@ -4,21 +4,17 @@ import SongRequest from "./songRequest";
 export default class Room {
 	playlist: Array<SongRequest> = new Array<SongRequest>();
 
-	activeUser: string = "";
-
 	constructor() {
 		makeAutoObservable(this);
 	}
 
-	setPlaylist(videos: string[]) {
-		this.playlist = videos.map((x) => new SongRequest({ video: x }));
+	addVideo(videoUrl: string, songTitle: string, singer: string, id: string) {
+		if (this.playlist.find((x) => x.id === id) === undefined) {
+			this.playlist.push(new SongRequest({ songTitle, videoUrl, singer }));
+		}
 	}
 
-	setActiveUser(name: string) {
-		this.activeUser = name;
-	}
-
-	addVideo(videoUrl: string) {
-		this.playlist.push(new SongRequest({ video: videoUrl }));
+	clearPlaylist() {
+		this.playlist = [];
 	}
 }

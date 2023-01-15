@@ -2,12 +2,18 @@ export default class SongRequest {
 	songTitle: string;
 	videoUrl: string;
 	singer: string;
+	id: string;
 	/**
 	 *
 	 */
-	constructor(input: { song?: string; video: string; singer?: string }) {
-		this.songTitle = input.song ?? "";
-		this.videoUrl = input.video ?? "";
+	constructor(input: {
+		songTitle?: string;
+		videoUrl: string;
+		singer?: string;
+	}) {
+		this.id = crypto.randomUUID();
+		this.songTitle = input.songTitle ?? "";
+		this.videoUrl = input.videoUrl ?? "";
 		this.singer = input.singer ?? "";
 	}
 }

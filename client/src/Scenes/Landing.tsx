@@ -1,30 +1,28 @@
 import { Box, Button, Flex, Input, Spacer, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSocket } from "../Contexts/SocketProvider";
+import { useStores } from "../Stores/RootStore";
 import "./Landing.css";
 
-interface ILandingProps {
-	// onRoomCode: (x: string) => void;
-}
-
-function Landing(props: ILandingProps) {
-	// const { onRoomCode } = props;
-	const { setActiveUser } = useSocket();
-
+function Landing() {
+	const { roomStore } = useStores();
 	const navigate = useNavigate();
 	const [roomCode, setRoomCode] = useState<string>("");
 	const [name, setName] = useState<string>("");
 
+	useEffect(() => {
+		roomStore.setRoomCode("");
+	}, [roomStore]);
+
 	const joinRoom = () => {
 		if (roomCode !== "") {
-			setActiveUser(name);
-			navigate(`/room/${roomCode}/guest`);
+			roomStore.joinRoom(roomCode, name);
+			navigate(`/room/guest`);
 		}
 	};
 
 	return (
-		<Flex justify="center">
+		<Flex justify="center" marginTop="10">
 			<VStack className="login-container">
 				<Box w="100%">
 					<label htmlFor="room">ROOM</label>

@@ -1,4 +1,5 @@
-import { AddIcon } from "@chakra-ui/icons";
+// import { AddIcon } from "@chakra-ui/icons";
+import { CloseIcon, AddIcon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
@@ -7,27 +8,35 @@ import {
 	useColorMode,
 	useColorModeValue,
 } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
-import { useSocket } from "../Contexts/SocketProvider";
 import { MoonIcon } from "../Icons/MoonIcon";
 import { SunIcon } from "../Icons/SunIcon";
+import { useStores } from "../Stores/RootStore";
 import { generateId } from "../utilities/idGenerator";
 
-function Navbar() {
+const Navbar = observer(() => {
 	const { colorMode, toggleColorMode } = useColorMode();
-	const { activeRoom } = useSocket();
+	const { roomStore } = useStores();
 	const navigate = useNavigate();
 
 	const createRoom = () => {
 		// onRoomCode(generateRoomCode());
-		var room = generateId(4);
-		navigate(`/room/${room}/host`);
+		var newRoomCode = generateId(4);
+		roomStore.joinRoom(newRoomCode, "");
+		navigate(`/room/host`);
+	};
+
+	const handleLeaveRoom = () => {
+		roomStore.clearRoomCode();
+		navigate(`/landing`);
 	};
 
 	return (
 		<Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
 			<Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-				<Box>Logo</Box>
+				<Box>Playlist Share</Box>
+				<Box>{roomStore.roomCode}</Box>
 
 				<Flex alignItems={"center"}>
 					<Stack direction={"row"} spacing={7}>
@@ -39,9 +48,17 @@ function Navbar() {
 							)}
 						</Button>
 
-						{activeRoom === undefined && (
-							<Button leftIcon={<AddIcon />} onClick={createRoom}>
-								Create new Room
+						{roomStore.hasRoomCode ? (
+							<Button
+								colorScheme="red"
+								leftIcon={<CloseIcon />}
+								onClick={handleLeaveRoom}
+							>
+								Leave Room
+							</Button>
+						) : (
+							<Button onClick={createRoom} leftIcon={<AddIcon />}>
+								New Room
 							</Button>
 						)}
 					</Stack>
@@ -49,6 +66,6 @@ function Navbar() {
 			</Flex>
 		</Box>
 	);
-}
+});
 
 export default Navbar;

@@ -5,8 +5,6 @@ class Room {
 
 	videos: Array<string> = [];
 
-	name: string = "little fun time room";
-
 	/**
 	 *
 	 */
@@ -31,7 +29,7 @@ class Room {
 		// TODO: Update song requests?
 	}
 
-	AddVideo(videoUrl: string) {
+	addVideo(videoUrl: string) {
 		this.videos.push(videoUrl);
 	}
 }
