@@ -1,8 +1,16 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, observable } from "mobx";
 import SongRequest from "./songRequest";
 
+export enum RoomState {
+	NOT_JOINED,
+	OK,
+	NO_HOST,
+	TOO_MANY_HOSTS,
+}
+
 export default class Room {
-	playlist: Array<SongRequest> = new Array<SongRequest>();
+	playlist = observable.array<SongRequest>([]);
+	state = RoomState.OK;
 
 	constructor() {
 		makeAutoObservable(this);
@@ -14,7 +22,13 @@ export default class Room {
 		}
 	}
 
+	removeVideo(id: string) {
+		this.playlist.replace(this.playlist.filter((x) => x.id !== id));
+	}
+
 	clearPlaylist() {
-		this.playlist = [];
+		if (this.playlist != null) {
+			this.playlist.clear();
+		}
 	}
 }

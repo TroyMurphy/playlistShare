@@ -1,7 +1,10 @@
+import { CloseIcon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
 	Container,
+	Heading,
+	IconButton,
 	Table,
 	Tbody,
 	Td,
@@ -9,40 +12,50 @@ import {
 	Th,
 	Thead,
 	Tr,
+	useToast,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { RoomState } from "../Models/Room";
 import SongRequest from "../Models/songRequest";
-import ISongRequest from "../Service/ISongRequest";
 import { useStores } from "../Stores/RootStore";
-import "./GameRoom.css";
 
 const HostRoom = observer(() => {
 	const { roomStore, socketStore } = useStores();
+	const toast = useToast();
+	const navigate = useNavigate();
 
 	useEffect(() => {
-		(async function () {
-			// // TODO: Extract to constants
-			// await socket.on("members-change", (lobbyists) => {
-			// 	console.log("members changed");
-			// 	setLobby(lobbyists);
-			// });
+		socketStore.tryHost();
+	}, [socketStore]);
 
-			// await socket.on("playlist-init", (videoUrls: Array<string>) => {
-			// 	console.log("playlist-init");
-			// 	room.setPlaylist(videoUrls);
-			// });
+	if (roomStore.room.state === RoomState.TOO_MANY_HOSTS) {
+		toast({
+			title: "Room already hosted",
+			description: "An error occured. You cannot host this room",
+			status: "error",
+			duration: 4000,
+			isClosable: true,
+		});
+		roomStore.clearRoomCode();
+		navigate("/landing");
+	}
 
-			socketStore.socket.on("on-request-song", (req: string) => {
-				const { songTitle, videoUrl, singer, id }: ISongRequest =
-					JSON.parse(req);
-				roomStore.room.addVideo(videoUrl, songTitle, singer, id);
-			});
-		})();
-	}, []);
+	const onRemove = (id: string) => {
+		roomStore.room.removeVideo(id);
+	};
 
 	return (
 		<>
+			<Box textAlign="center" py={10}>
+				<Heading as="h2" size="md" fontStyle={"italic"}>
+					Room code:
+				</Heading>
+				<Heading as="h2" size="4xl" colorScheme="blue">
+					{roomStore.roomCode}
+				</Heading>
+			</Box>
 			<Container>
 				{roomStore.room.playlist.length > 0 ? (
 					<Table>
@@ -50,6 +63,7 @@ const HostRoom = observer(() => {
 							<Tr>
 								<Th>Song</Th>
 								<Th>Singer</Th>
+								<Th />
 							</Tr>
 						</Thead>
 						<Tbody>
@@ -57,6 +71,14 @@ const HostRoom = observer(() => {
 								<Tr key={req.id}>
 									<Td>{req.songTitle}</Td>
 									<Td>{req.singer}</Td>
+									<Td>
+										<IconButton
+											onClick={() => onRemove(req.id)}
+											size="xs"
+											aria-label="Remove"
+											icon={<CloseIcon />}
+										/>
+									</Td>
 								</Tr>
 							))}
 						</Tbody>

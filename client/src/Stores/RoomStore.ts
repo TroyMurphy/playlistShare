@@ -3,11 +3,19 @@ import { STORAGE_ROOM_CODE_KEY, STORAGE_USERNAME_KEY } from "../Constants";
 import Room from "../Models/Room";
 import { RootStore } from "./RootStore";
 
+export enum UserType {
+	NONE,
+	GUEST,
+	HOST,
+}
+
 class RoomStore {
 	rootStore: RootStore;
 
 	roomCode: string = "";
 	username: string = "";
+
+	userType = UserType.NONE;
 
 	room: Room = new Room();
 
@@ -21,11 +29,19 @@ class RoomStore {
 		if (storedUsername != null) {
 			this.username = storedUsername;
 		}
+		if (this.roomCode && this.username) {
+			this.joinRoom(this.roomCode, this.username);
+		}
 
 		makeAutoObservable(this);
 	}
 
-	joinRoom = (code: string, username: string) => {
+	joinRoom = (
+		code: string,
+		username: string,
+		userType: UserType = UserType.GUEST
+	) => {
+		this.userType = userType;
 		this.setRoomCode(code);
 		this.setUsername(username);
 		this.rootStore.socketStore.joinRoom(code, username);
@@ -36,6 +52,10 @@ class RoomStore {
 		this.rootStore.socketStore.requestVideo(url, videoName, requestId);
 	};
 
+	setUserType = (userType: UserType) => {
+		this.userType = userType;
+	};
+
 	setRoomCode = (code: string) => {
 		this.roomCode = code;
 		sessionStorage.setItem(STORAGE_ROOM_CODE_KEY, this.roomCode);
@@ -43,7 +63,7 @@ class RoomStore {
 
 	setUsername = (name: string) => {
 		this.username = name;
-		sessionStorage.setItem(STORAGE_USERNAME_KEY, this.roomCode);
+		sessionStorage.setItem(STORAGE_USERNAME_KEY, this.username);
 	};
 
 	clearRoomCode = () => {

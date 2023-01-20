@@ -6,6 +6,7 @@ import GuestRoom from "./Scenes/GuestRoom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./Components/Navbar";
 import { observer } from "mobx-react-lite";
+import Footer from "./Components/Footer";
 
 const App = observer(() => {
 	return (
@@ -19,6 +20,7 @@ const App = observer(() => {
 					<Route path="/room/host" element={<HostRoom />} />
 				</Routes>
 			</main>
+			<Footer />
 		</ChakraProvider>
 	);
 });

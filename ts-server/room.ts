@@ -22,11 +22,18 @@ class Room {
 
 	disconnect(socketId: string) {
 		delete this.members[socketId];
+		if (this.host === socketId) {
+			this.host = "";
+		}
 	}
 
 	updateMember(socket: string, name: string) {
 		this.members[socket] = name;
 		// TODO: Update song requests?
+	}
+
+	setHost(socket: string) {
+		this.host = socket;
 	}
 
 	addVideo(videoUrl: string) {

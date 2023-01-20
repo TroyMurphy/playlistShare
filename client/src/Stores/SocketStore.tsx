@@ -1,4 +1,6 @@
+import { makeAutoObservable } from "mobx";
 import openSocket, { Socket } from "socket.io-client";
+import { RoomState } from "../Models/Room";
 import IJoinRequest from "../Service/IJoinRequest";
 import ISongRequest from "../Service/ISongRequest";
 import { RootStore } from "./RootStore";
@@ -10,7 +12,30 @@ export class SocketStore {
 	constructor(rootStore: RootStore) {
 		this.socket = openSocket("localhost:5000");
 		this.rootStore = rootStore;
+		makeAutoObservable(this);
+		this.initializeSocket();
 	}
+
+	initializeSocket() {
+		this.socket.on("on-request-song", (req: string) => {
+			const { songTitle, videoUrl, singer, id }: ISongRequest = JSON.parse(req);
+			this.rootStore.roomStore.room.addVideo(videoUrl, songTitle, singer, id);
+		});
+
+		this.socket.on("on-host-check", (hostId: string) => {
+			if (this.socket.id !== hostId) {
+				this.rootStore.roomStore.room.state = RoomState.TOO_MANY_HOSTS;
+			}
+		});
+
+		this.socket.on("on-join-room", (status: string) => {
+			console.log("Joined as: " + status);
+		});
+	}
+
+	tryHost = async () => {
+		this.socket.emit("try-host", this.rootStore.roomStore.roomCode);
+	};
 
 	joinRoom = async (roomCode: string, username: string) => {
 		const request: IJoinRequest = { roomCode: roomCode, name: username };

@@ -7,8 +7,8 @@ export class RootStore {
 	socketStore: SocketStore;
 
 	constructor() {
-		this.roomStore = new RoomStore(this);
 		this.socketStore = new SocketStore(this);
+		this.roomStore = new RoomStore(this);
 	}
 }
 

@@ -12,6 +12,7 @@ import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
 import { MoonIcon } from "../Icons/MoonIcon";
 import { SunIcon } from "../Icons/SunIcon";
+import { UserType } from "../Stores/RoomStore";
 import { useStores } from "../Stores/RootStore";
 import { generateId } from "../utilities/idGenerator";
 
@@ -21,9 +22,8 @@ const Navbar = observer(() => {
 	const navigate = useNavigate();
 
 	const createRoom = () => {
-		// onRoomCode(generateRoomCode());
 		var newRoomCode = generateId(4);
-		roomStore.joinRoom(newRoomCode, "");
+		roomStore.joinRoom(newRoomCode, "", UserType.HOST);
 		navigate(`/room/host`);
 	};
 

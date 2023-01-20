@@ -38,11 +38,32 @@ io.on("connection", (socket: sockets.Socket) => {
 
 		console.log("new member joining room " + roomCode + ": " + socket.id);
 		await socket.join(roomCode);
+
+		let socketMemberState = "";
 		if (lobbies[roomCode] !== undefined) {
 			GetRoom(roomCode).addMember(socket.id, name);
+			socketMemberState = "GUEST";
 		} else {
 			lobbies[roomCode] = new Room(socket.id);
+			socketMemberState = "HOST";
 		}
+
+		socket.to(socket.id).emit("on-join-room", socketMemberState);
+	});
+
+	socket.on("try-host", async (roomCode: string) => {
+		console.log("Try host");
+		const room = GetRoom(roomCode);
+		if (room === undefined) {
+			console.log("Room doesn't exist");
+			return;
+		}
+		console.log(room.host);
+		if (room.host === "") {
+			room.setHost(socket.id);
+		}
+		console.log(`New host: ${socket.id}`);
+		socket.to(socket.id).emit("on-host-check", room.host);
 	});
 
 	socket.on("request-song", async (req: string) => {
@@ -52,16 +73,12 @@ io.on("connection", (socket: sockets.Socket) => {
 		io.to(room.host).emit("on-request-song", req);
 	});
 
-	// socket.on("disconnect", () => {
-	// 	console.log("user disconnected");
-	// 	Object.keys(lobbies).forEach((x) => {
-	// 		lobbies[x].disconnect(socket.id);
-	// 		io.to(lobbies[x].host).emit("members-changed", lobbies[x].memberCount());
-	// 		if (lobbies[x].memberCount() == 0) {
-	// 			delete lobbies[x];
-	// 		}
-	// 	});
-	// });
+	socket.on("disconnect", () => {
+		console.log("user disconnected: " + socket.id);
+		Object.keys(lobbies).forEach((x) => {
+			lobbies[x].disconnect(socket.id);
+		});
+	});
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
