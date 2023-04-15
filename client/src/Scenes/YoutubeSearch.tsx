@@ -1,25 +1,31 @@
 import {
+	Box,
 	Button,
 	Card,
 	CardBody,
 	CardFooter,
-	Grid,
-	GridItem,
+	Heading,
 	Image,
-	Text,
+	Stack,
+	Wrap,
+	WrapItem,
 } from "@chakra-ui/react";
+import parse from "html-react-parser";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import IVideo from "../Service/IVideo";
+import YoutubeService from "../Service/YoutubeService";
+import YoutubeSearchInput from "./YoutubeSearchInput";
 
 interface IYoutubeSearchProps {
-	onRequest: (videoUrl: string) => void;
+	onRequest: (video: IVideo) => void;
 }
 
 function YoutubeSearch(props: IYoutubeSearchProps) {
-	const [searchResults] = useState<string[]>(["apple", "Banana", "sillygoose"]);
+	const [searchResults, setSearchResults] = useState<IVideo[]>([]);
 	const [canRequest, setCanRequest] = useState(true);
 
-	const sendRequest = (video: string) => {
+	const sendRequest = (video: IVideo) => {
 		if (canRequest) {
 			setCanRequest(false);
 			props.onRequest(video);
@@ -30,23 +36,39 @@ function YoutubeSearch(props: IYoutubeSearchProps) {
 		}, 50);
 	};
 
+	const handleVideoSearch = async (query: string) => {
+		var results = await YoutubeService.search(query);
+		setSearchResults(results);
+	};
+
 	return (
 		<>
-			<Grid gap={2}>
-				<GridItem>
-					{searchResults.map((result: string, index: number) => (
-						<Card key={index}>
+			<Box width="100%" pl={10} pr={10}>
+				<YoutubeSearchInput onSearch={handleVideoSearch} />
+			</Box>
+			<Wrap gap="5">
+				{searchResults.map((result: IVideo) => (
+					<WrapItem key={result.videoId} w={{ base: "300px" }}>
+						<Card key={result.videoId}>
 							<CardBody>
-								<Image src="https://unsplash.it/200" />
+								<Image src={result.thumbnail} w="100%" />
+								<Stack>
+									<Box>
+										<Heading h="40px" size="xs" textOverflow="ellipsis">
+											{parse(result.title)}
+										</Heading>
+									</Box>
+								</Stack>
 							</CardBody>
 							<CardFooter>
-								<Text>{result}</Text>
-								<Button onClick={() => sendRequest(result)}>Add</Button>
+								<Button minW="100%" onClick={() => sendRequest(result)}>
+									Add
+								</Button>
 							</CardFooter>
 						</Card>
-					))}
-				</GridItem>
-			</Grid>
+					</WrapItem>
+				))}
+			</Wrap>
 		</>
 	);
 }

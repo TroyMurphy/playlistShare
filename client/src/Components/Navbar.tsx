@@ -1,5 +1,5 @@
 // import { AddIcon } from "@chakra-ui/icons";
-import { CloseIcon, AddIcon } from "@chakra-ui/icons";
+import { CloseIcon, AddIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import {
 	Box,
 	Button,
@@ -49,11 +49,7 @@ const Navbar = observer(() => {
 						</Button>
 
 						{roomStore.hasRoomCode ? (
-							<Button
-								colorScheme="red"
-								leftIcon={<CloseIcon />}
-								onClick={handleLeaveRoom}
-							>
+							<Button leftIcon={<ArrowBackIcon />} onClick={handleLeaveRoom}>
 								Leave Room
 							</Button>
 						) : (

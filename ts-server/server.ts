@@ -1,33 +1,29 @@
+import * as dotenv from "dotenv";
 import express from "express";
 import http from "http";
-import Room from "./room";
 import sockets from "socket.io";
-import IVideoRequest from "./IVideoRequest";
 import IJoinRequest from "./Requests/IJoinRequest";
-import INameChangeRequest from "./Requests/INameChangeRequest";
 import ISongRequest from "./Requests/ISongRequest";
+import Room from "./room";
 
-const port = 5000;
+import { config } from "./config";
+
+const environment = process.env.NODE_ENV || "development";
+const envVars = config[environment];
+
+const { PORT, CORS_ORIGIN } = envVars;
+
+const port = PORT;
 
 const app = express();
 
 const server = new http.Server(app);
 
-const io = new sockets.Server(server, { cors: { origin: "*" } });
+const io = new sockets.Server(server, { cors: { origin: CORS_ORIGIN } });
 
 const lobbies: { [roomCode: string]: Room } = {};
 
 const GetRoom = (roomCode: string): Room => lobbies[roomCode];
-
-// const GetRoomId = (socket: sockets.Socket): string => {
-// 	if (socket.rooms.size > 1) {
-// 		socket.rooms.forEach((element: string) => {
-// 			console.log(element);
-// 		});
-// 	}
-// 	const [room] = socket.rooms;
-// 	return room;
-// };
 
 // This is what the socket.io syntax is like, we will work this later
 io.on("connection", (socket: sockets.Socket) => {

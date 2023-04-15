@@ -5,17 +5,19 @@
   "main": "server.ts",
   "scripts": {
     "build": "npx tsc",
+    "build:prod": "NODE_ENV=production npx tsc",
     "start": "tsnd server.ts",
-		"dev:debug": "ts-node-dev --transpile-only --respawn --inspect=5000 --project tsconfig.dev.json src/server.ts",
-		"dev": "ts-node-dev --transpile-only --respawn --project tsconfig.dev.json src/server.ts"
+    "dev:debug": "ts-node-dev --transpile-only --respawn --inspect=5000 --project tsconfig.dev.json src/server.ts",
+    "dev": "ts-node-dev --transpile-only --respawn --project tsconfig.dev.json src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
+    "mysql": "^2.18.1",
     "socket.io": "^4.5.1"
   },
   "devDependencies": {

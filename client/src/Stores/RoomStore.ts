@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { STORAGE_ROOM_CODE_KEY, STORAGE_USERNAME_KEY } from "../Constants";
 import Room from "../Models/Room";
+import IVideo from "../Service/IVideo";
 import { RootStore } from "./RootStore";
 
 export enum UserType {
@@ -47,9 +48,13 @@ class RoomStore {
 		this.rootStore.socketStore.joinRoom(code, username);
 	};
 
-	requestVideo = (url: string, videoName: string) => {
+	requestVideo = (video: IVideo) => {
 		const requestId = crypto.randomUUID();
-		this.rootStore.socketStore.requestVideo(url, videoName, requestId);
+		this.rootStore.socketStore.requestVideo(
+			video.videoUrl,
+			video.title,
+			requestId
+		);
 	};
 
 	setUserType = (userType: UserType) => {
