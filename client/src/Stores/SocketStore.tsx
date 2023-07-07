@@ -9,8 +9,11 @@ export class SocketStore {
 	rootStore: RootStore;
 	socket: Socket;
 
+	private static SERVER_URL =
+		process.env.REACT_APP_SERVER_BASE_URL || "localhost:5000";
+
 	constructor(rootStore: RootStore) {
-		this.socket = openSocket("localhost:5000");
+		this.socket = openSocket(SocketStore.SERVER_URL);
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
 		this.initializeSocket();

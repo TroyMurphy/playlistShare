@@ -5,26 +5,33 @@ services:
     build:
       context: ./ts-server
       dockerfile: ./Dockerfile
-      target: production
-    image: "troymurphy/playlist-share-server"
+      target: development
+    volumes:
+      - ./ts-server/:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - "5000:5000"
     networks:
       - backend
+    command: npm run dev
 
   frontend:
     container_name: client
     build:
       context: ./client
+      target: builder
       dockerfile: ./Dockerfile
-    image: "troymurphy/playlist-share-client"
     env_file:
-      - ./client/.env
+      - ./client/.env.development.local
     ports:
-      - "3000:80"
+      - "3000:3000"
+    volumes:
+      - ./client/:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - frontend
       - backend
+    command: npm start
     links:
       - "backend:be"
 

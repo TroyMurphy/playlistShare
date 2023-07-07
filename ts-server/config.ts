@@ -14,6 +14,6 @@ export const config: Environments = {
 	},
 	production: {
 		PORT: 5000,
-		CORS_ORIGIN: "playlistShare.azurewebsites.net",
+		CORS_ORIGIN: "karaoke.troymurphy.ca",
 	},
 };
