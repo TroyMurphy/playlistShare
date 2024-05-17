@@ -22,7 +22,7 @@ services:
       target: builder
       dockerfile: ./Dockerfile
     env_file:
-      - ./client/.env.development.local
+      - ./client/.env.local
     ports:
       - "3000:3000"
     volumes:

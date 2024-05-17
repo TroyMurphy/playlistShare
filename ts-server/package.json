@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --poll server.ts",
     "build": "npx tsc",
-    "start": "tsnd server.ts"
+    "start": "node build/server.js"
   },
   "keywords": [],
   "author": "",
