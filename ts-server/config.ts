@@ -14,6 +14,6 @@ export const config: Environments = {
   },
   production: {
     PORT: 80,
-    CORS_ORIGIN: "karaoke.troymurphy.ca",
+    CORS_ORIGIN: "https://karaoke.troymurphy.ca",
   },
 };
